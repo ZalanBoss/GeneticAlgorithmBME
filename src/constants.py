@@ -1,0 +1,4 @@
+SCREEN_WIDTH = 770
+SCREEN_HEIGHT = 880
+FPS = 60
+TITLE = "Genetic Algorithm"
