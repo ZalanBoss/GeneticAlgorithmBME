@@ -1,13 +1,15 @@
 from agent import *
 from build import *
 import pygame
-import numpy
+import numpy as np
+
 
 def main():
     world = World()
-    setup = world.setup_world()   
+    world.setup_world()  # tpye=ignore
     context = {"running": True}
     world.update_world(context)
+
 
 if __name__ == "__main__":
     main()
