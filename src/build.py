@@ -28,12 +28,13 @@ class World():
             for agent in self.agents:
                 agent.update(self.dt)
                 agent.render()
-            break #comment for rendering window
+            #break #comment for rendering window
     def setup_world(self):
-        agent = Agent([1,1])
-        self.agents.append(agent)
+        for i in range(INITAL_POP):
+            agent = Agent([0,0])
+            self.agents.append(agent)
         
-        print(f"Agent genome {agent.chromosome}")
+        #print(f"Agent genome {agent.chromosome}")
         pg.init()
         self.screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pg.display.set_caption(self.title)
