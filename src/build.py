@@ -19,22 +19,22 @@ class World():
         self.title = TITLE
         self.agents = []
         self.screen = None
-        self.clock = pg.clock
+        #self.clock = pg.clock
 
-        self.dt = self.clock.tick(self.fps)/1000
-        
+        self.dt = 0#self.clock.tick(self.fps)/1000
     def update_world(self, context):
         while context["running"]:
             self.pygame_handler(context)
             for agent in self.agents:
                 agent.update(self.dt)
                 agent.render()
-            break #comment for rendering window
-            
+            #break #comment for rendering window
     def setup_world(self):
-        agent = Agent([1,1],1)
-        self.agents.append(agent)
-
+        for i in range(INITAL_POP):
+            agent = Agent([0,0])
+            self.agents.append(agent)
+        
+        #print(f"Agent genome {agent.chromosome}")
         pg.init()
         self.screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pg.display.set_caption(self.title)
