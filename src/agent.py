@@ -1,5 +1,5 @@
 import numpy as np
-from constants import MAX_ACC, MAX_ANG_VEL, SEN_SIZE, SEN_POINT_RADIUS, MAX_VEL
+from constants import MAX_ACC, MAX_ANG_ACC, SEN_SIZE, SEN_POINT_RADIUS, MAX_VEL, MAX_ANG_VEL
 from functions import rot_mat
 
 class Agent():
@@ -11,6 +11,7 @@ class Agent():
         self.acceleration = 0
         self.orientation = initial_orientation
         self.angular_velocity = 0
+        self.angular_acceleration = 0
             # DETECTION
         self.sensor_size = SEN_SIZE
         s1 = [np.array([0, 3+SEN_POINT_RADIUS*i]) for i in range(SEN_SIZE//SEN_POINT_RADIUS)]
@@ -30,12 +31,15 @@ class Agent():
         self.acceleration += self.handle_input()[0]
         self.acceleration = np.min([MAX_ACC,self.acceleration])
         
-        self.angular_velocity += self.handle_input()[1]
+        self.angular_acceleration += self.handle_input()[1]
         #print(f"handle_input {self.handle_input()[1]}")
-        self.angular_velocity = np.min([MAX_ANG_VEL, self.angular_velocity])
+        self.angular_acceleration = np.min([MAX_ANG_ACC, self.angular_acceleration])
         #print(f"Initial acceleration: {self.acceleration}")
         self.velocity += self.acceleration*dt
         self.velocity = np.min([self.velocity, MAX_VEL])
+        self.angular_velocity += self.angular_acceleration*dt
+        self.angular_velocity = np.min([self.angular_velocity, MAX_ANG_VEL])
+
         self.position[0] += self.velocity*np.cos(self.orientation)*dt
         self.position[1] += self.velocity*np.sin(self.orientation)*dt
         self.orientation += self.angular_velocity*dt
@@ -43,9 +47,9 @@ class Agent():
         pass #TODO
     def handle_input(self):
         acc = np.sum(np.matmul(self.sensors,self.chromosome[0]))
-        ang_vel = np.sum(np.matmul(self.sensors,self.chromosome[1]))
+        ang_acc = np.sum(np.matmul(self.sensors,self.chromosome[1]))
         #print(f"{ang_vel}")
         #print(f"{self.chromosome[0].shape}")
-        return (acc, ang_vel) 
+        return (acc, ang_acc) 
     def detection(self, point):
         pass
