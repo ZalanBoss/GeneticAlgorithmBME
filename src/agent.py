@@ -1,9 +1,9 @@
 import numpy as np
-from constants import MAX_ACC, MAX_ANG_ACC, SEN_SIZE, SEN_POINT_RADIUS, MAX_VEL, MAX_ANG_VEL
+from constants import MAX_ACC, MAX_ANG_ACC, SEN_SIZE, SEN_POINT_RADIUS, MAX_VEL, MAX_ANG_VEL, GREEN, BLACK, MAP
 from functions import rot_mat
 
 class Agent():
-    def __init__(self, initial_postion, initial_orientation=np.pi/2):
+    def __init__(self, initial_postion, initial_orientation=np.pi/2):           # Should add genes
         # TRAITS
             # MOVEMENT
         self.position = initial_postion
@@ -21,12 +21,12 @@ class Agent():
         s5 = [rot_mat(np.pi/2)@np.array([i,j]) for (i,j) in s1]
         #print(f"[1,0] vector rotated by 90 deg is: {rot_mat(np.pi/2)@np.array([1,0])}")
         #print(f"first se.. {self.s1}")
-        self.sensor_positions = [s1,s2,s3,s4,s5]
+        self.sensor_positions = np.asarray([s1,s2,s3,s4,s5])
         #print(f"s-s: {self.sensor_positions}")
         # INPUTS
-        self.sensors = np.array([[-1,-1,-1], [-1,-1,-1], [-1,-1,-1], [-1,-1,-1], [-1,-1,-1]])
+        self.sensors = np.full((5,9), -1)
         # OUTPUTS
-        self.chromosome = np.random.uniform(-10, 10, (2,3,5))
+        self.chromosome = np.random.uniform(-10, 10, (2,9,5))
     def update(self, dt):
         self.acceleration += self.handle_input()[0]
         self.acceleration = np.min([MAX_ACC,self.acceleration])
@@ -51,5 +51,16 @@ class Agent():
         #print(f"{ang_vel}")
         #print(f"{self.chromosome[0].shape}")
         return (acc, ang_acc) 
-    def detection(self, point):
-        pass
+    def detection(self, sensor_positions):                  # loop-hellt megoldom
+        detect_positions = sensor_positions.round()         # én is hányok tőle
+        for i in range(len(detect_positions)):
+            for j in range(len(detect_positions[i])):
+                x = detect_positions[i, j, 0]
+                y = detect_positions[i, j, 1]
+                if MAP[x, y] == GREEN:
+                    self.sensors[i, j] = 1
+                else:
+                    self.sensors[i, j] = -1
+        
+        
+
