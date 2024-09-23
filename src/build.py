@@ -1,6 +1,7 @@
 from agent import *
 import pygame as pg
 from constants import *
+from assets import import_image
 
 from pygame.locals import (
     K_UP,
@@ -19,6 +20,7 @@ class World():
         self.title = TITLE
         self.agents = []
         self.screen = None
+        self.track = import_image()
         #self.clock = pg.clock
 
         self.dt = 0#self.clock.tick(self.fps)/1000
