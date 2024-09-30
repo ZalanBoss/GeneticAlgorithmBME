@@ -76,14 +76,14 @@ class Agent():
         return (acc, ang_acc) 
     def detection(self, sensor_positions):                  # loop-hellt megoldom
         detect_positions = sensor_positions.round()         # én is hányok tőle
-        for i in range(len(detect_positions)):
-            for j in range(len(detect_positions[i])):
-                x = detect_positions[i, j, 0]
-                y = detect_positions[i, j, 1]
+        for sensor in range(len(detect_positions)):
+            for point in range(len(detect_positions[sensor])):
+                x = detect_positions[sensor, point, 0]
+                y = detect_positions[sensor, point, 1]
                 if MAP[x, y] == GREEN:
                     self.sensors[sensor, point] = 1
                 else:
-                    self.sensors[i, j] = -1
+                    self.sensors[sensor, point] = -1
         
         
 

@@ -1,4 +1,5 @@
 import os
+import assets
 #=======
 import numpy as np
 
@@ -20,8 +21,10 @@ MAX_ANG_VEL = 200
 INITAL_POP = 250
 DAMPING_FACTOR = 0.01
 
-### TODO: AUTOMATE IT
-GREEN = np.array([0.2, 0.1, 0.1, 1])
-BLACK = np.array([0, 0, 0, 1])
-MAP = np.full((800, 600, 4), 1)
-###
+
+MAP = assets.track
+GREEN = MAP[100, 100]
+BLACK = MAP[400, 300]
+
+
+

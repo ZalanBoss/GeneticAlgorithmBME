@@ -1,13 +1,23 @@
-import matplotlib.pyplot as plt
-from matplotlib import image as mpimg
-from matplotlib import pyplot as plt
-import numpy as np
 import os
-from constants import PARENT_PATH
+from pathlib import Path
+import matplotlib.pyplot as plt
 
-#os.path.dirname(__file__)
+# Get the absolute path to the current script
+script_dir = Path(__file__).parent
 
-def import_image():
-    #track = mpimg.imread(os.path.join(PARENT_PATH, "/assets/mytrack.png"))
-    #print(os.getcwd())
-    return 0#track
+# Build the relative path to the image
+img_path = script_dir / '..' / 'assets' / 'mytrack.png'
+
+# Convert to string if needed for matplotlib
+img_path = str(img_path)
+
+# Now read the image
+
+track = plt.imread(img_path)
+
+
+
+
+
+
+
