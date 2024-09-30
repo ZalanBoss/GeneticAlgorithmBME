@@ -3,17 +3,17 @@
 [] Implement Genetic Algorithm
     [] Implement Input + Output
         [] Input: Sensor (**9** zones)
-            [] "Find Distance From PNG"
+            [*] "Find Distance From PNG"
                 [] Computer IMG parse
                 [] IMG recognition
                 [] Correct Distance Formula
             [] Alternative Solution: Map Builder
                 [] Roadside Marker Detection (With Sensor)
-        [] Output: (First Solution) Rot + Acc
+        [*] Output: (First Solution) Rot + Acc
             [] TODO logic  
     [] Implement Genes
-        [] Gene System 2x5x9
-            [] Chromosomes
+        [*] Gene System 2x5x9
+            [*] Chromosomes
             [] TODO logic
         [] Zero-th Population
             [] Randomize Genes
