@@ -8,6 +8,6 @@ from constants import PARENT_PATH
 #os.path.dirname(__file__)
 
 def import_image():
-    track = mpimg.imread(os.path.join(PARENT_PATH, "/assets/mytrack.png"))
+    #track = mpimg.imread(os.path.join(PARENT_PATH, "/assets/mytrack.png"))
     #print(os.getcwd())
-    return track
+    return 0#track

@@ -2,6 +2,7 @@ from agent import *
 import pygame as pg
 from constants import *
 from assets import import_image
+import numpy as np
 
 from pygame.locals import (
     K_UP,
@@ -29,11 +30,13 @@ class World():
             self.pygame_handler(context)
             for agent in self.agents:
                 agent.update(self.dt)
+                print(f"{agent.sensor_positions}")
                 agent.render()
+            context["running"] = False
             #break #comment for rendering window
     def setup_world(self):
         for i in range(INITAL_POP):
-            agent = Agent([0,0])
+            agent = Agent(np.array([0,0]))
             self.agents.append(agent)
         
         #print(f"Agent genome {agent.chromosome}")

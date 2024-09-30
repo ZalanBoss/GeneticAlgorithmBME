@@ -2,8 +2,8 @@
 
 [] Implement Genetic Algorithm
     [] Implement Input + Output
-        [] Input: Sensor (**5** zones)
-            [] "Find Distance From JPG"
+        [] Input: Sensor (**9** zones)
+            [] "Find Distance From PNG"
                 [] Computer IMG parse
                 [] IMG recognition
                 [] Correct Distance Formula
@@ -12,7 +12,7 @@
         [] Output: (First Solution) Rot + Acc
             [] TODO logic  
     [] Implement Genes
-        [] Gene System 2x5x5
+        [] Gene System 2x5x9
             [] Chromosomes
             [] TODO logic
         [] Zero-th Population
