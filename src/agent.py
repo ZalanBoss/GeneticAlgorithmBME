@@ -68,10 +68,10 @@ class Agent():
         self.orientation += self.angular_velocity * dt
 
         # Always rotate the original surface based on the current orientation (to avoid the growing square issue)
-        rotated_surface = pg.transform.rotate(self.surface_original, -np.degrees(self.orientation))
+        #rotated_surface = pg.transform.rotate(self.surface_original, -np.degrees(self.orientation))
 
         # Re-center the surface
-        self.surface = rotated_surface
+        #self.surface = rotated_surface
         self.surface_rect = self.surface.get_rect(center=(self.position[0], self.position[1]))
 
         # Update sensor positions with the new rotation
