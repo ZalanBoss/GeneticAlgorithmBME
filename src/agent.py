@@ -6,7 +6,7 @@ import pygame as pg
 class Agent():
     def __init__(self, initial_postion, chromosome, initial_orientation=np.pi/2, ):           # Should add genes
         self.surface = pg.Surface((AGENT_SIZE,AGENT_SIZE))
-        self.surface.fill((0,0,0))
+        self.surface.fill((200,0,200))
         self.surface_original = self.surface.copy()
 
         # TRAITS
