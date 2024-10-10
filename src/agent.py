@@ -3,10 +3,15 @@ from constants import *
 from functions import rot_mat
 import pygame as pg
 
+
 class Agent():
     def __init__(self, initial_postion, chromosome, initial_orientation=np.pi/2, ):           # Should add genes
         self.surface = pg.Surface((AGENT_SIZE,AGENT_SIZE))
+<<<<<<< HEAD
         self.surface.fill((200,0,200))
+=======
+        self.surface.fill((0,200,250))
+>>>>>>> c9d6e168244c665c722a9810566a5751b3dca79e
         self.surface_original = self.surface.copy()
 
         # TRAITS
@@ -50,9 +55,9 @@ class Agent():
         self.angular_acceleration = np.clip(self.angular_acceleration, -MAX_ANG_ACC, MAX_ANG_ACC)
 
         # Update velocity and angular velocity
-        self.velocity += self.acceleration * dt if self.is_on_road else self.acceleration * dt * DAMPING_FACTOR * 0.1
+        self.velocity += self.acceleration * dt if self.is_on_road else self.acceleration * dt * DAMPING_FACTOR
         
-        self.velocity = np.clip(self.velocity, -MAX_VEL, MAX_VEL)
+        self.velocity = np.clip(self.velocity, -MAX_VEL/5, MAX_VEL) if self.is_on_road else np.clip(self.velocity, -MAX_VEL/5, MAX_VEL) * DAMPING_FACTOR
     
         self.angular_velocity += self.angular_acceleration * dt
         self.angular_velocity = np.clip(self.angular_velocity, -MAX_ANG_VEL, MAX_ANG_VEL)
@@ -90,26 +95,47 @@ class Agent():
                 pg.draw.circle(screen, (255,0,0), (s[0], s[1]), 1)
 
     def handle_input(self):
+        self.detection(self.convert_sensor_postion())
+        self.collide()        
 
-        acc = 0.01*np.sum(np.matmul(self.sensors,self.chromosome[0]))
-        ang_acc = 0.01*np.sum(np.matmul(self.sensors,self.chromosome[1]))
+        acc = 1*np.sum(np.matmul(self.sensors,self.chromosome[0]))
+        ang_acc = 1*np.sum(np.matmul(self.sensors,self.chromosome[1]))
         #print(f"{ang_vel}")
         #print(f"{self.chromosome[0].shape}")
-        return (acc, ang_acc) 
+        return (acc, ang_acc)
+    
     def collide(self):
-        pos = self.position.round()
-        if GREEN == MAP[pos[0], pos[1]]:
+        pos = self.position#.round()
+        if np.allclose(MAP[int(pos[1]), int(pos[0])], GREEN):
             self.is_on_road = False
         else:
-            self.is_on_road = True
+            self.is_on_road = True 
+            
 
-    def detection(self, sensor_positions):                               # loop-hellt megoldom
-        detect_positions = self.convert_sensor_postion().round()         # én is hányok tőle
-        for i in range(len(detect_positions)):
-            for j in range(len(detect_positions[i])):
-                x = detect_positions[i, j, 0]
-                y = detect_positions[i, j, 1]
-                if MAP[x, y] == GREEN:
-                    self.sensors[i, j] = 1
+    def detection(self, sensor_positions):
+        x_min = 0
+        x_max = 799
+        y_min = 0
+        y_max = 599                  # loop-hellt megoldom
+        detect_positions = sensor_positions.round()         # én is hányok tőle
+        for sensor in range(len(detect_positions)):
+            for point in range(len(detect_positions[sensor])):
+                x = max(x_min, min(int(detect_positions[sensor, point, 0]), x_max))
+                y = max(y_min, min(int(detect_positions[sensor, point, 0]), y_max))
+                
+    
+                if np.array_equal(MAP[y,x], GREEN):
+                    self.sensors[sensor, point] = 1
+                    #print(f"sensor{sensor} point{point} ({x},{y})")
+
                 else:
-                    self.sensors[i, j] = -1
+                    self.sensors[sensor, point] = -1
+                    #print(f"sensor{sensor} point{point} ({x},{y})")
+                    
+
+        #print(f"sensor1:{self.sensors[0]}")
+        
+        
+        
+        
+

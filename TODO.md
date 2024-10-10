@@ -1,6 +1,7 @@
 ### TODO List
 
 [] Implement Genetic Algorithm
+<<<<<<< HEAD
     [*] Implement Input + Output
         [*] Input: Sensor (**9** zones)
         [*] Output: (First Solution) Rot + Acc
@@ -17,6 +18,25 @@
         [*] Zero-th Population
             [*] Randomize Genes
                 [*] TODO logic
+=======
+    [] Implement Input + Output
+        [] Input: Sensor (**9** zones)
+            [*] "Find Distance From PNG"
+                [] Computer IMG parse
+                [] IMG recognition
+                [] Correct Distance Formula
+            [] Alternative Solution: Map Builder
+                [] Roadside Marker Detection (With Sensor)
+        [*] Output: (First Solution) Rot + Acc
+            [] TODO logic  
+    [] Implement Genes
+        [*] Gene System 2x5x9
+            [*] Chromosomes
+            [] TODO logic
+        [] Zero-th Population
+            [] Randomize Genes
+                [] TODO logic
+>>>>>>> c9d6e168244c665c722a9810566a5751b3dca79e
     [] Fitness Function
         [] Score Eval
             [] Experiments:

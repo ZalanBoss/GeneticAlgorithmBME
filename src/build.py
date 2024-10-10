@@ -1,7 +1,7 @@
 from agent import *
 import pygame as pg
 from constants import *
-from assets import import_image
+from assets import track_path
 import numpy as np
 
 from pygame.locals import (
@@ -21,7 +21,7 @@ class World():
         self.title = TITLE
         self.agents = []
         self.screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-        self.track = import_image()
+        self.track = pg.image.load(track_path())
         self.clock = pg.time.Clock()
 
         self.dt = 0#self.clock.tick(self.fps)/1000
@@ -38,8 +38,8 @@ class World():
             #break #comment for rendering window
     def setup_world(self):
         for i in range(INITAL_POP):
-            rand_chromo = np.random.uniform(-1, 1, (2,9,5))
-            agent = Agent(np.array([0 + np.random.rand()*500, SCREEN_HEIGHT/2]), rand_chromo)
+            rand_chromo = np.random.uniform(-15, 15, (2,9,5))
+            agent = Agent(np.array([80,SCREEN_HEIGHT/2]), rand_chromo) # x=0 + np.random.rand()*500 
             print(rand_chromo)
             self.agents.append(agent) 
         #print(f"Agent genome {agent.chromosome}")
@@ -48,7 +48,8 @@ class World():
         pg.display.set_caption(self.title)
         
     def pygame_handler(self, context):
-        self.screen.fill((255, 255, 255))
+        #self.screen.fill((255, 255, 255))
+        self.screen.blit(self.track, (0, 0))
         for event in pg.event.get():
         # Did the user hit a key?
             if event.type == KEYDOWN:
