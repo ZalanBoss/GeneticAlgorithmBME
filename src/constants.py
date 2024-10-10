@@ -12,19 +12,19 @@ FPS = 60
 TITLE = "Genetic Algorithm"
 
 PARENT_PATH = os.path.join(os.path.dirname(__file__), '..')
-MAX_ACC = 10
-MAX_ANG_ACC = 10
+MAX_ACC = 5000
+MAX_ANG_ACC = 5000
 SEN_SIZE = 54
 SEN_POINT_RADIUS = 6
-MAX_VEL = 200
-MAX_ANG_VEL = 200
-INITAL_POP = 250
-DAMPING_FACTOR = 0.01
+MAX_VEL = 150
+MAX_ANG_VEL = 2 
+INITAL_POP = 10
+DAMPING_FACTOR = 0.8
+AGENT_SIZE = 15
 
 
-MAP = assets.track
+MAP =  assets.track
 GREEN = MAP[100, 100]
 BLACK = MAP[400, 300]
-
 
 

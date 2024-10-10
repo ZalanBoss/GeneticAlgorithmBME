@@ -1,10 +1,15 @@
 import numpy as np
 from constants import *
 from functions import rot_mat
+import pygame as pg
+
 
 class Agent():
-    def __init__(self, initial_postion, initial_orientation=np.pi/2, 
-                 chromosome = np.random.uniform(-10, 10, (2,9,5))):           # Should add genes
+    def __init__(self, initial_postion, chromosome, initial_orientation=np.pi/2, ):           # Should add genes
+        self.surface = pg.Surface((AGENT_SIZE,AGENT_SIZE))
+        self.surface.fill((0,200,250))
+        self.surface_original = self.surface.copy()
+
         # TRAITS
             # MOVEMENT
         self.lifetime = 0
@@ -33,57 +38,100 @@ class Agent():
         # OUTPUTS
         self.chromosome = chromosome
     def update(self, dt):
-        self.collide()
+        # Update lifetime, road time, acceleration, etc.
         self.lifetime += 1
         if self.is_on_road:
             self.roadtime += 1
 
-        self.acceleration += self.handle_input()[0]
-        self.acceleration = np.min([MAX_ACC,self.acceleration])
-        
+        #   Handle inputs for acceleration and angular acceleration
+        self.acceleration += self.handle_input()[0] * 0.1
+        self.acceleration = np.clip(self.acceleration, -MAX_ACC, MAX_ACC)
+       
         self.angular_acceleration += self.handle_input()[1]
-        #print(f"handle_input {self.handle_input()[1]}")
-        self.angular_acceleration = np.min([MAX_ANG_ACC, self.angular_acceleration])
-        #print(f"Initial acceleration: {self.acceleration}")
-        self.velocity += self.acceleration*dt if self.is_on_road else self.acceleration*dt*DAMPING_FACTOR
-        self.velocity = np.min([self.velocity, MAX_VEL])
-        self.angular_velocity += self.angular_acceleration*dt
-        self.angular_velocity = np.min([self.angular_velocity, MAX_ANG_VEL])
+        self.angular_acceleration = np.clip(self.angular_acceleration, -MAX_ANG_ACC, MAX_ANG_ACC)
 
-        self.position[0] += self.velocity*np.cos(self.orientation)*dt
-        for i in range(len(self.sensor_positions)):
-            self.sensor_positions[i] += [self.velocity*np.cos(self.orientation)*dt, self.velocity*np.sin(self.orientation)*dt]
-
-        self.position[1] += self.velocity*np.sin(self.orientation)*dt
-        self.distance_travelled += self.velocity*dt
-        self.orientation += self.angular_velocity*dt
+        # Update velocity and angular velocity
+        self.velocity += self.acceleration * dt if self.is_on_road else self.acceleration * dt * DAMPING_FACTOR
         
-        for i in range(len(self.sensor_positions)): # TODO: May not work
-            self.sensor_positions[i] = (rot_mat(self.angular_velocity*dt)@self.sensor_positions[i].T).T
+        self.velocity = np.clip(self.velocity, -MAX_VEL/5, MAX_VEL) if self.is_on_road else np.clip(self.velocity, -MAX_VEL/5, MAX_VEL) * DAMPING_FACTOR
+    
+        self.angular_velocity += self.angular_acceleration * dt
+        self.angular_velocity = np.clip(self.angular_velocity, -MAX_ANG_VEL, MAX_ANG_VEL)
 
+        # Update position based on velocity and orientation
+        self.position = (
+            self.position[0] + self.velocity * np.cos(self.orientation) * dt,
+            self.position[1] + self.velocity * np.sin(self.orientation) * dt
+        )
+        self.distance_travelled += self.velocity * dt
+
+        # Update orientation
+        self.orientation += self.angular_velocity * dt
+
+        # Always rotate the original surface based on the current orientation (to avoid the growing square issue)
+        #rotated_surface = pg.transform.rotate(self.surface_original, -np.degrees(self.orientation))
+
+        # Re-center the surface
+        #self.surface = rotated_surface
+        self.surface_rect = self.surface.get_rect(center=(self.position[0], self.position[1]))
+
+        # Update sensor positions with the new rotation
+        for i in range(len(self.sensor_positions)):
+            self.sensor_positions[i] = (rot_mat(self.angular_velocity * dt) @ self.sensor_positions[i].T).T
     def convert_sensor_postion(self):
         absolute_sensor_position = np.zeros(self.sensor_positions.shape)
         for i in range(len(self.sensor_positions)):
             absolute_sensor_position[i] = (self.position+self.sensor_positions[i])
         return absolute_sensor_position
-    def render(self):
-        pass #TODO
+    def render(self, screen):
+        #pg.draw.circle(screen, (255,0,0), (self.position[0], self.position[1]), 10) 
+        screen.blit(self.surface, self.surface_rect)
+        for sensor_position in self.convert_sensor_postion():
+            for s in sensor_position:
+                pg.draw.circle(screen, (255,0,0), (s[0], s[1]), 1)
+
     def handle_input(self):
-        acc = np.sum(np.matmul(self.sensors,self.chromosome[0]))
-        ang_acc = np.sum(np.matmul(self.sensors,self.chromosome[1]))
+        self.detection(self.convert_sensor_postion())
+        self.collide()        
+
+        acc = 1*np.sum(np.matmul(self.sensors,self.chromosome[0]))
+        ang_acc = 1*np.sum(np.matmul(self.sensors,self.chromosome[1]))
         #print(f"{ang_vel}")
         #print(f"{self.chromosome[0].shape}")
-        return (acc, ang_acc) 
-    def detection(self, sensor_positions):                  # loop-hellt megoldom
+        return (acc, ang_acc)
+    
+    def collide(self):
+        pos = self.position#.round()
+        if np.allclose(MAP[int(pos[1]), int(pos[0])], GREEN):
+            self.is_on_road = False
+        else:
+            self.is_on_road = True 
+            
+
+    def detection(self, sensor_positions):
+        x_min = 0
+        x_max = 799
+        y_min = 0
+        y_max = 599                  # loop-hellt megoldom
         detect_positions = sensor_positions.round()         # én is hányok tőle
         for sensor in range(len(detect_positions)):
             for point in range(len(detect_positions[sensor])):
-                x = detect_positions[sensor, point, 0]
-                y = detect_positions[sensor, point, 1]
-                if MAP[x, y] == GREEN:
+                x = max(x_min, min(int(detect_positions[sensor, point, 0]), x_max))
+                y = max(y_min, min(int(detect_positions[sensor, point, 0]), y_max))
+                
+    
+                if np.array_equal(MAP[y,x], GREEN):
                     self.sensors[sensor, point] = 1
+                    #print(f"sensor{sensor} point{point} ({x},{y})")
+
                 else:
                     self.sensors[sensor, point] = -1
+                    #print(f"sensor{sensor} point{point} ({x},{y})")
+                    
+
+        #print(f"sensor1:{self.sensors[0]}")
+        
+        
         
         
 

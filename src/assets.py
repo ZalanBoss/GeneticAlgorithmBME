@@ -10,6 +10,12 @@ img_path = str(img_path)
 
 track = plt.imread(img_path)
 
+def track_path():
+    return img_path
+
+
+
+
 
 
 
