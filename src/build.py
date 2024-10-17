@@ -38,9 +38,9 @@ class World():
             #break #comment for rendering window
     def setup_world(self):
         for i in range(INITAL_POP):
-            rand_chromo = np.random.uniform(-15, 15, (2,9,5))
-            agent = Agent(np.array([80,SCREEN_HEIGHT/2]), rand_chromo) # x=0 + np.random.rand()*500 
-            print(rand_chromo)
+            rand_chromo = np.random.uniform(-150, 150, (2,9,5))
+            agent = Agent(np.array([20,SCREEN_HEIGHT/2]), rand_chromo) # x=0 + np.random.rand()*500 
+            #print(rand_chromo)
             self.agents.append(agent) 
         #print(f"Agent genome {agent.chromosome}")
         pg.init()
