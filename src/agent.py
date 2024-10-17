@@ -120,24 +120,13 @@ class Agent():
             self.active = 0
 
     def detection(self, sensor_positions):
-        x_min, x_max = 0, SCREEN_WIDTH - 1
-        y_min, y_max = 0, SCREEN_HEIGHT - 1
-
-        detect_positions = np.round(sensor_positions).astype(int)  # Ensure integer indices
-
-        for sensor in range(len(detect_positions)):
-            for point in range(len(detect_positions[sensor])):
-            # Ensure the coordinates are within the bounds of the map
-                x = np.clip(detect_positions[sensor, point, 0], x_min, x_max)
-                y = np.clip(detect_positions[sensor, point, 1], y_min, y_max)
-
-                # Now check if the sensor is on the road (represented by GREEN)
-                if np.array_equal(MAP[y, x], GREEN):
-                    self.sensors[sensor, point] = 1  # Sensor detects the road
-                    self.sensor_color = (0, 255, 0)  # Change sensor color to green for road detection
-                else:
-                    self.sensors[sensor, point] = -1  # Sensor detects off the road
-                    self.sensor_color = (255, 0, 0)  # Change sensor color to red for off-road detection
+        detect_positions = np.round(sensor_positions).astype(int)
+        x_positions = np.clip(detect_positions[..., 0], 0, SCREEN_WIDTH - 1)
+        y_positions = np.clip(detect_positions[..., 1], 0, SCREEN_HEIGHT - 1)
+        map_values = MAP[y_positions, x_positions]
+        black_mask = np.all(map_values == BLACK, axis=-1)
+        self.sensors[black_mask] = -1
+        self.sensors[~black_mask] = 1    
     def fitness(self):
 
         return 0
