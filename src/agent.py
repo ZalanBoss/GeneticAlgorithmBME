@@ -39,12 +39,8 @@ class Agent():
 
         # OUTPUTS
         self.chromosome = chromosome
-<<<<<<< HEAD
-    def update(self, dt, check_coords):
-=======
 
-    def update(self, dt):
->>>>>>> 56455245610cceeb0ea03142c3b08d14f74dbfc5
+    def update(self, dt, check_coords):
         # Update lifetime, road time, acceleration, etc.
         if self.active:
             self.lifetime += dt
