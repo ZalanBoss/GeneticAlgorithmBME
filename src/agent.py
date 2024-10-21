@@ -87,7 +87,7 @@ class Agent():
 
     def render(self, screen):
         screen.blit(self.surface, self.surface_rect)
-        for sensor_position in self.convert_sensor_position():
+        for sensor_position in self.convert_sensor_postion():
             for s in sensor_position:
                 pg.draw.circle(screen, self.sensor_color, (s[0], s[1]), 1)
 
@@ -126,7 +126,8 @@ class Agent():
         map_values = MAP[y_positions, x_positions]
         black_mask = np.all(map_values == BLACK, axis=-1)
         self.sensors[black_mask] = -1
-        self.sensors[~black_mask] = 1
+        self.sensors[~black_mask] = 1 
+
     def fitness(self):
 
         return 0
