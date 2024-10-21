@@ -23,16 +23,33 @@ class World():
         self.screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.track = pg.image.load(track_path())
         self.clock = pg.time.Clock()
-
+        self.debug_mode = True
         self.dt = 0#self.clock.tick(self.fps)/1000
+        self.checkpoint_coords = np.array([
+            [170, 430],
+            [335, 360],
+            [435, 250],
+            [565, 175],
+            [740, 290],
+            [565, 430],
+            [435, 350],
+            [335, 230],
+            [170, 165],
+        ])
     def update_world(self, context):
         while context["running"]:
             self.dt = self.clock.tick(self.fps) / 1000
             self.pygame_handler(context)
             for agent in self.agents:
-                agent.update(self.dt)
+                agent.update(self.dt, self.checkpoint_coords)
                 #print(f"{agent.sensor_positions}")
                 agent.render(self.screen)
+                
+            if self.debug_mode:
+                for c in self.checkpoint_coords:
+                    pg.draw.circle(self.screen, (255,0,255), (c[0], c[1]), 25)
+
+
             pg.display.flip()
             #context["running"] = False
             #break #comment for rendering window

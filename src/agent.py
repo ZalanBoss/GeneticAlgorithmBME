@@ -11,6 +11,7 @@ class Agent():
         self.surface_original = self.surface.copy()
         self.active = 1
         self.sensor_color = (255, 0, 0)
+        self.checkpoint_traversed = 0
         # TRAITS
             # MOVEMENT
         self.lifetime = 0
@@ -38,9 +39,10 @@ class Agent():
         self.sensors = np.full((5,9), -1)
         # OUTPUTS
         self.chromosome = chromosome
-    def update(self, dt):
+    def update(self, dt, check_coords):
         # Update lifetime, road time, acceleration, etc.
-        self.lifetime += 1
+        if self.active:
+            self.lifetime += dt
         if self.is_on_road:
             self.roadtime += 1
         if self.active:
@@ -50,7 +52,7 @@ class Agent():
            
             self.angular_acceleration += self.handle_input()[1]
             self.angular_acceleration = np.clip(self.angular_acceleration, -MAX_ANG_ACC, MAX_ANG_ACC)
-
+            self.collide_checkpoint(check_coords)
             # Update velocity and angular velocity
             self.velocity += self.acceleration * dt if self.is_on_road else self.acceleration * dt * DAMPING_FACTOR
             
@@ -79,6 +81,11 @@ class Agent():
         if self.active:
             for i in range(len(self.sensor_positions)):
                 self.sensor_positions[i] = (rot_mat(self.angular_velocity * dt) @ self.sensor_positions[i].T).T
+    def collide_checkpoint(self, check_coords):
+        for i in check_coords:
+            pass
+        
+        pass
     def convert_sensor_postion(self):
         absolute_sensor_position = np.zeros(self.sensor_positions.shape)
         for i in range(len(self.sensor_positions)):
@@ -128,5 +135,5 @@ class Agent():
         self.sensors[black_mask] = -1
         self.sensors[~black_mask] = 1    
     def fitness(self):
-
-        return 0
+        
+        return self.active*200+self.lifetime*1.4 + self.roadtime*5 + 3*self.distance_travelled/self.lifetime
