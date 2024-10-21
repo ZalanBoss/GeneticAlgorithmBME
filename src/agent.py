@@ -13,33 +13,38 @@ class Agent():
         self.sensor_color = (255, 0, 0)
         self.checkpoint_traversed = 0
         # TRAITS
-            # MOVEMENT
+        # MOVEMENT
         self.lifetime = 0
         self.distance_travelled = 0
         self.roadtime = 0
-        self.position = (initial_postion)
+        self.position = initial_postion
         self.velocity = 0
         self.acceleration = 0
         self.orientation = initial_orientation
         self.angular_velocity = 0
         self.angular_acceleration = 0
-            # DETECTION
+
+        # DETECTION
         self.is_on_road = True
         self.sensor_size = SEN_SIZE
-        s1 = [np.array([0, 3+SEN_POINT_RADIUS*i]) for i in range(SEN_SIZE//SEN_POINT_RADIUS)]
-        s2 = [rot_mat(np.pi/4)@np.array([i,j]) for (i,j) in s1]
-        s3 = [rot_mat(-np.pi/4)@np.array([i,j]) for (i,j) in s1]
-        s4 = [rot_mat(-np.pi/2)@np.array([i,j]) for (i,j) in s1]
-        s5 = [rot_mat(np.pi/2)@np.array([i,j]) for (i,j) in s1]
-        #print(f"[1,0] vector rotated by 90 deg is: {rot_mat(np.pi/2)@np.array([1,0])}")
-        #print(f"first se.. {self.s1}")
-        self.sensor_positions = np.asarray([s1,s2,s3,s4,s5]) # When working with detector ADD self.position
-        #print(f"s-s: {self.sensor_positions}")
+        s1 = [np.array([0, 3 + SEN_POINT_RADIUS * i]) for i in range(SEN_SIZE // SEN_POINT_RADIUS)]
+        s2 = [rot_mat(np.pi / 4) @ np.array([i, j]) for (i, j) in s1]
+        s3 = [rot_mat(-np.pi / 4) @ np.array([i, j]) for (i, j) in s1]
+        s4 = [rot_mat(-np.pi / 2) @ np.array([i, j]) for (i, j) in s1]
+        s5 = [rot_mat(np.pi / 2) @ np.array([i, j]) for (i, j) in s1]
+        self.sensor_positions = np.asarray([s1, s2, s3, s4, s5])
+
         # INPUTS
-        self.sensors = np.full((5,9), -1)
+        self.sensors = np.full((5, 9), -1)
+
         # OUTPUTS
         self.chromosome = chromosome
+<<<<<<< HEAD
     def update(self, dt, check_coords):
+=======
+
+    def update(self, dt):
+>>>>>>> 56455245610cceeb0ea03142c3b08d14f74dbfc5
         # Update lifetime, road time, acceleration, etc.
         if self.active:
             self.lifetime += dt
@@ -75,7 +80,6 @@ class Agent():
             #rotated_surface = pg.transform.rotate(self.surface_original, -np.degrees(self.orientation))
 
         # Re-center the surface
-        #self.surface = rotated_surface
         self.surface_rect = self.surface.get_rect(center=(self.position[0], self.position[1]))
         # Update sensor positions with the new rotation
         if self.active:
@@ -89,10 +93,10 @@ class Agent():
     def convert_sensor_postion(self):
         absolute_sensor_position = np.zeros(self.sensor_positions.shape)
         for i in range(len(self.sensor_positions)):
-            absolute_sensor_position[i] = (self.position+self.sensor_positions[i])
+            absolute_sensor_position[i] = (self.position + self.sensor_positions[i])
         return absolute_sensor_position
+
     def render(self, screen):
-        #pg.draw.circle(screen, (255,0,0), (self.position[0], self.position[1]), 10) 
         screen.blit(self.surface, self.surface_rect)
         for sensor_position in self.convert_sensor_postion():
             for s in sensor_position:
@@ -111,7 +115,7 @@ class Agent():
         self.collide()        
         return (acc, ang_acc)
     def collide(self):
-        pos = self.position#.round()
+        pos = self.position
         if np.allclose(MAP[int(pos[1]), int(pos[0])], GREEN):
             self.is_on_road = False
         else:
@@ -133,7 +137,8 @@ class Agent():
         map_values = MAP[y_positions, x_positions]
         black_mask = np.all(map_values == BLACK, axis=-1)
         self.sensors[black_mask] = -1
-        self.sensors[~black_mask] = 1    
+        self.sensors[~black_mask] = 1 
+
     def fitness(self):
         
         return self.active*200+self.lifetime*1.4 + self.roadtime*5 + 3*self.distance_travelled/self.lifetime

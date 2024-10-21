@@ -58,6 +58,9 @@ class World():
             rand_chromo = np.random.uniform(-5000, 5000, (2,9,5))
             agent = Agent(np.array([20,SCREEN_HEIGHT/2]), rand_chromo) # x=0 + np.random.rand()*500 
             #print(rand_chromo)
+            rand_chromo = np.random.uniform(-5000, 5000, (2,9,5))
+            agent = Agent(np.array([80,SCREEN_HEIGHT/2]), rand_chromo) # x=0 + np.random.rand()*500 
+            #print(rand_chromo)
             self.agents.append(agent) 
         #print(f"Agent genome {agent.chromosome}")
         pg.init()
