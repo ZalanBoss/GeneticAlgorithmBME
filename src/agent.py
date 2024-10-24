@@ -4,12 +4,13 @@ from functions import rot_mat
 import pygame as pg
 
 class Agent():
-    def __init__(self, initial_postion, chromosome, checkpoint_coordinates, initial_orientation=np.pi/2, ):           # Should add genes
+    def __init__(self, initial_postion, chromosome, checkpoint_coordinates, identity, initial_orientation=np.pi/2, color_bruh =(0,100,255)):           # Should add genes
         self.surface = pg.Surface((AGENT_SIZE,AGENT_SIZE) )
-        self.surface.fill((200,0,200))
-        self.surface.fill((0,200,250))
+        self.surface.fill(color_bruh)
+        #self.surface.fill((0,200,250))
         self.surface_original = self.surface.copy()
         self.active = 1
+        self.id = identity
         self.sensor_color = (255, 0, 0)
         self.checkpoint_traversed = 0
         self.checkpoint_coordinates = checkpoint_coordinates
@@ -46,7 +47,7 @@ class Agent():
         if self.active:
             self.lifetime += dt
         if self.is_on_road:
-            self.roadtime += 1
+            self.roadtime += dt
         if self.active:
             #   Handle inputs for acceleration and angular acceleration
             self.acceleration += self.handle_input()[0] * 0.1
@@ -93,7 +94,7 @@ class Agent():
                     print(f"the ith checkpoint: {self.checkpoint_traversed}")
                 else:
                     self.checkpoint_coordinates = np.concatenate((self.checkpoint_coordinates[:i], self.checkpoint_coordinates[i+1:]))
-                    print(f"checkpoint_traversed : {self.checkpoint_traversed}")
+                    print(f"{self.id} traversed checkpoint {self.checkpoint_traversed}")
                 break
         
         pass
@@ -148,4 +149,4 @@ class Agent():
 
     def fitness(self):
         
-        return self.active*200+self.lifetime*1.4 + self.roadtime*5 + 3*self.distance_travelled/self.lifetime
+        return self.active*2000+self.lifetime*3.4 + self.roadtime*500 + 50*self.distance_travelled/self.lifetime + 5000*self.checkpoint_traversed + self.velocity * 200
