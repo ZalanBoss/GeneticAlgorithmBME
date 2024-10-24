@@ -4,14 +4,15 @@ from functions import rot_mat
 import pygame as pg
 
 class Agent():
-    def __init__(self, initial_postion, chromosome, initial_orientation=np.pi/2, ):           # Should add genes
-        self.surface = pg.Surface((AGENT_SIZE,AGENT_SIZE))
+    def __init__(self, initial_postion, chromosome, checkpoint_coordinates, initial_orientation=np.pi/2, ):           # Should add genes
+        self.surface = pg.Surface((AGENT_SIZE,AGENT_SIZE) )
         self.surface.fill((200,0,200))
         self.surface.fill((0,200,250))
         self.surface_original = self.surface.copy()
         self.active = 1
         self.sensor_color = (255, 0, 0)
         self.checkpoint_traversed = 0
+        self.checkpoint_coordinates = checkpoint_coordinates
         # TRAITS
         # MOVEMENT
         self.lifetime = 0
@@ -53,7 +54,7 @@ class Agent():
            
             self.angular_acceleration += self.handle_input()[1]
             self.angular_acceleration = np.clip(self.angular_acceleration, -MAX_ANG_ACC, MAX_ANG_ACC)
-            self.collide_checkpoint(check_coords)
+            self.collide_checkpoint(self.checkpoint_coordinates)
             # Update velocity and angular velocity
             self.velocity += self.acceleration * dt if self.is_on_road else self.acceleration * dt * DAMPING_FACTOR
             
@@ -82,8 +83,18 @@ class Agent():
             for i in range(len(self.sensor_positions)):
                 self.sensor_positions[i] = (rot_mat(self.angular_velocity * dt) @ self.sensor_positions[i].T).T
     def collide_checkpoint(self, check_coords):
-        for i in check_coords:
-            pass
+        for i,val in enumerate(check_coords):
+            if (AGENT_SIZE/2 + CHECKPOINT_RADIUS) >= np.sqrt((val[0]-self.position[0])**2+(val[1]-self.position[1])**2):
+                #self.sensor_color = (200,0,200)
+                #self.active = 0
+                self.checkpoint_traversed+=1
+                if i-1 > len(check_coords):
+                    self.checkpoint_coordinates = self.checkpoint_coordinates[:i]
+                    print(f"the ith checkpoint: {self.checkpoint_traversed}")
+                else:
+                    self.checkpoint_coordinates = np.concatenate((self.checkpoint_coordinates[:i], self.checkpoint_coordinates[i+1:]))
+                    print(f"checkpoint_traversed : {self.checkpoint_traversed}")
+                break
         
         pass
     def convert_sensor_postion(self):

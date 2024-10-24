@@ -36,9 +36,13 @@ class World():
             [335, 230],
             [170, 165],
         ])
+        self.global_timer = 0
     def update_world(self, context):
         while context["running"]:
             self.dt = self.clock.tick(self.fps) / 1000
+            self.global_timer += self.dt
+            if (self.global_timer > SIMULATION_TIME):
+                break
             self.pygame_handler(context)
             for agent in self.agents:
                 agent.update(self.dt, self.checkpoint_coords)
@@ -47,7 +51,7 @@ class World():
                 
             if self.debug_mode:
                 for c in self.checkpoint_coords:
-                    pg.draw.circle(self.screen, (255,0,255), (c[0], c[1]), 25)
+                    pg.draw.circle(self.screen, (255,0,255), (c[0], c[1]), CHECKPOINT_RADIUS)
 
 
             pg.display.flip()
@@ -56,10 +60,7 @@ class World():
     def setup_world(self):
         for i in range(INITAL_POP):
             rand_chromo = np.random.uniform(-5000, 5000, (2,9,5))
-            agent = Agent(np.array([20,SCREEN_HEIGHT/2]), rand_chromo) # x=0 + np.random.rand()*500 
-            #print(rand_chromo)
-            rand_chromo = np.random.uniform(-5000, 5000, (2,9,5))
-            agent = Agent(np.array([80,SCREEN_HEIGHT/2]), rand_chromo) # x=0 + np.random.rand()*500 
+            agent = Agent(np.array([20,SCREEN_HEIGHT/2]), rand_chromo, self.checkpoint_coords) # x=0 + np.random.rand()*500 
             #print(rand_chromo)
             self.agents.append(agent) 
         #print(f"Agent genome {agent.chromosome}")
@@ -79,3 +80,5 @@ class World():
                     context["running"] = False
             elif event.type == QUIT:
                 context["running"] = False
+    def restart_simulation(self):
+        pass
