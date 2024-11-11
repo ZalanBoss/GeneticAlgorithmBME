@@ -4,6 +4,7 @@ import pygame as pg
 from constants import *
 from assets import track_path
 import numpy as np
+from save import *
 
 
 from pygame.locals import (
@@ -21,7 +22,7 @@ class World():
         self.fps = FPS
         self.title = TITLE
         self.generation = 0
-        self.agents = []
+        self.agents = np.zeros(INITAL_POP, dtype=object)
         self.screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.track = pg.image.load(track_path())
         self.clock = pg.time.Clock()
@@ -65,18 +66,20 @@ class World():
             #context["running"] = False
             #break #comment for rendering window
     def setup_world(self):
-        genes_load = np.load("genes/gene_1_94564.9795999999.npy")
-        for i in range(INITAL_POP):
-            rand_chromo = np.random.uniform(-5000, 5000, (2,9,5))
-            if i != 3:
-                agent = Agent(np.array([AGENT_INITAIL_X,AGENT_INITAIL_Y]), rand_chromo, self.checkpoint_coords, i) # x=0 + np.random.rand()*500 
-            else:
-                agent = Agent(np.array([AGENT_INITAIL_X,AGENT_INITAIL_Y]), genes_load, self.checkpoint_coords, i, color_bruh=(0,255,255)) # x=0 + np.random.rand()*500 
+        if self.generation == 0:
+            genes_load = np.load("genes/gene_1_94564.9795999999.npy")
+            for i in range(INITAL_POP):
+                rand_chromo = np.random.uniform(-5000, 5000, (2,9,5))
+                if i != 3:
+                    agent = Agent(np.array([AGENT_INITAIL_X,AGENT_INITAIL_Y]), rand_chromo, self.checkpoint_coords, i) # x=0 + np.random.rand()*500 
+                else:
+                    agent = Agent(np.array([AGENT_INITAIL_X,AGENT_INITAIL_Y]), genes_load, self.checkpoint_coords, i, color_bruh=(0,255,255)) # x=0 + np.random.rand()*500 
 
 
 
-            #print(rand_chromo)
-            self.agents.append(agent) 
+                # print(i)
+                self.agents[i] = agent
+            
         #print(f"Agent genome {agent.chromosome}")
         pg.init()
         self.screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -95,10 +98,12 @@ class World():
             elif event.type == QUIT:
                 context["running"] = False
     def restart_simulation(self):
+        save_genes(self.agents, self.generation)
         self.generation += 1
         self.global_timer = 0
         # Save
         # Crossover / Mutation
         pass
     def load_simulation(self):
-        pass
+        self.agents = load_genes(self.generation)
+

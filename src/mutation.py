@@ -14,3 +14,11 @@ def mutation(agent:Agent):
             flat_genes[random_index] = mutation_value
     new_chromosome = flat_genes.reshape(chromosome.shape)
     return new_chromosome
+<<<<<<< HEAD
+=======
+
+def proper_mutation(genes):
+    mutation = np.random.random((INITAL_POP, 2, 9, 5)) < 0.001
+    genes = (1-mutation) * genes + mutation * np.random.normal(-5000, 5000, (INITAL_POP, 2, 9, 5))
+    
+>>>>>>> main
