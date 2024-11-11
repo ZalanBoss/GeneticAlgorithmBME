@@ -1,8 +1,11 @@
 from agent import *
+from pathlib import Path
 import pygame as pg
 from constants import *
 from assets import track_path
 import numpy as np
+from save import *
+
 
 from pygame.locals import (
     K_UP,
@@ -14,16 +17,16 @@ from pygame.locals import (
     QUIT,
 )
 
-
 class World():
     def __init__(self):
         self.fps = FPS
         self.title = TITLE
-        self.agents = []
+        self.generation = 0
+        self.agents = np.zeros(INITAL_POP, dtype=object)
         self.screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.track = pg.image.load(track_path())
         self.clock = pg.time.Clock()
-        self.debug_mode = True
+        self.debug_mode = True # See checkpoints
         self.dt = 0#self.clock.tick(self.fps)/1000
         self.checkpoint_coords = np.array([
             [170, 430],
@@ -42,6 +45,11 @@ class World():
             self.dt = self.clock.tick(self.fps) / 1000
             self.global_timer += self.dt
             if (self.global_timer > SIMULATION_TIME):
+                for i in self.agents:
+                    print(f"id: {i.id}, fitness: {i.fitness()}")
+                    if (i.fitness() > 80000):
+                        np.save(f"genes/gene_{i.id}_{i.fitness()}",i.chromosome)
+                self.restart_simulation()
                 break
             self.pygame_handler(context)
             for agent in self.agents:
@@ -58,11 +66,20 @@ class World():
             #context["running"] = False
             #break #comment for rendering window
     def setup_world(self):
-        for i in range(INITAL_POP):
-            rand_chromo = np.random.uniform(-5000, 5000, (2,9,5))
-            agent = Agent(np.array([20,SCREEN_HEIGHT/2]), rand_chromo, self.checkpoint_coords) # x=0 + np.random.rand()*500 
-            #print(rand_chromo)
-            self.agents.append(agent) 
+        if self.generation == 0:
+            genes_load = np.load("genes/gene_1_94564.9795999999.npy")
+            for i in range(INITAL_POP):
+                rand_chromo = np.random.uniform(-5000, 5000, (2,9,5))
+                if i != 3:
+                    agent = Agent(np.array([AGENT_INITAIL_X,AGENT_INITAIL_Y]), rand_chromo, self.checkpoint_coords, i) # x=0 + np.random.rand()*500 
+                else:
+                    agent = Agent(np.array([AGENT_INITAIL_X,AGENT_INITAIL_Y]), genes_load, self.checkpoint_coords, i, color_bruh=(0,255,255)) # x=0 + np.random.rand()*500 
+
+
+
+                # print(i)
+                self.agents[i] = agent
+            
         #print(f"Agent genome {agent.chromosome}")
         pg.init()
         self.screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -81,4 +98,12 @@ class World():
             elif event.type == QUIT:
                 context["running"] = False
     def restart_simulation(self):
+        save_genes(self.agents, self.generation)
+        self.generation += 1
+        self.global_timer = 0
+        # Save
+        # Crossover / Mutation
         pass
+    def load_simulation(self):
+        self.agents = load_genes(self.generation)
+
