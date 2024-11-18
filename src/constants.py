@@ -32,3 +32,4 @@ GREEN = MAP[100, 100]
 BLACK = MAP[400, 300]
 RED = MAP[0,0] # will change it
 
+MUTATION_CHANCE = 0.01

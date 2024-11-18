@@ -79,6 +79,7 @@ class World():
 
                 # print(i)
                 self.agents[i] = agent
+                print(f"chromosome {self.agents[i].chromosome}")
             
         #print(f"Agent genome {agent.chromosome}")
         pg.init()
