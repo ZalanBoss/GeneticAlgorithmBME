@@ -21,12 +21,12 @@ def proper_selection(agents):
     genes= np.zeros((INITAL_POP, 2, 9, 5))
     for i in range(len(fitness_vals)):
         fitness_vals[i] = agents[i].fitness()
-    agents = (-fitness_vals).argsort()
     for i in range(len(agents)):
         genes[i] = agents[i].chromosome
-    genes = (-fitness_vals).argsort()
-    for i in range(INITAL_POP/2, INITAL_POP):
-        parent1, parent2 = np.random.choice(range(INITAL_POP/2), 2, replace=False)
+    agents = (-fitness_vals).argsort()
+    #genes = (-fitness_vals).argsort()
+    for i in range(INITAL_POP//2, INITAL_POP):
+        parent1, parent2 = np.random.choice(range(INITAL_POP//2), 2, replace=False)
         repro = np.random.random((2,9,5)) < 0.5
         genes[agents[i]] = genes[agents[parent1]]*repro + genes[agents[parent2]]*(1-repro)
     

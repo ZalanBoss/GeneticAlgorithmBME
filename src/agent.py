@@ -149,4 +149,5 @@ class Agent():
 
     def fitness(self):
         
-        return self.active*2000+self.lifetime*3.4 + self.roadtime*500 + 50*self.distance_travelled/self.lifetime + 5000*self.checkpoint_traversed + self.velocity * 200
+        return self.active*2000+self.lifetime*3.4 + self.roadtime*500 + 50*self.distance_travelled/self.lifetime + 5000*self.checkpoint_traversed + self.velocity * 200 #self.active*50000+self.lifetime*3.4 + self.roadtime*150 + 25*self.distance_travelled/self.lifetime + self.velocity * 200 + 20000*self.checkpoint_traversed
+        #return self.active*2000+self.lifetime*3.4 + self.roadtime*2 + 100*self.distance_travelled/self.lifetime + 20000*self.checkpoint_traversed + self.velocity * 200

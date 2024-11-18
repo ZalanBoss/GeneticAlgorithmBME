@@ -16,6 +16,6 @@ def mutation(agent:Agent):
     return new_chromosome
 
 def proper_mutation(genes):
-    mutation = np.random.random((INITAL_POP, 2, 9, 5)) < 0.001
-    genes = (1-mutation) * genes + mutation * np.random.normal(-5000, 5000, (INITAL_POP, 2, 9, 5))
+    mutation = np.random.random((INITAL_POP, 2, 9, 5)) < 0.01
+    genes = (1-mutation) * genes + mutation * np.random.normal(-1, 1, (INITAL_POP, 2, 9, 5))
     
