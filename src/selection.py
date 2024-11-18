@@ -23,8 +23,12 @@ def proper_selection(agents):
         fitness_vals[i] = agents[i].fitness()
     for i in range(len(agents)):
         genes[i] = agents[i].chromosome
+<<<<<<< HEAD
     agents = (-fitness_vals).argsort()
     #genes = (-fitness_vals).argsort()
+=======
+    genes = (-fitness_vals).argsort()
+>>>>>>> update_code
     for i in range(INITAL_POP//2, INITAL_POP):
         parent1, parent2 = np.random.choice(range(INITAL_POP//2), 2, replace=False)
         repro = np.random.random((2,9,5)) < 0.5
