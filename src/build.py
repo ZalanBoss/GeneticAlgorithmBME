@@ -5,6 +5,8 @@ from constants import *
 from assets import track_path
 import numpy as np
 from save import *
+from selection import proper_selection
+from mutation import proper_mutation
 
 
 from pygame.locals import (
@@ -45,12 +47,13 @@ class World():
             self.dt = self.clock.tick(self.fps) / 1000
             self.global_timer += self.dt
             if (self.global_timer > SIMULATION_TIME):
+                """
                 for i in self.agents:
                     print(f"id: {i.id}, fitness: {i.fitness()}")
                     if (i.fitness() > 80000):
                         np.save(f"genes/gene_{i.id}_{i.fitness()}",i.chromosome)
+                """
                 self.restart_simulation()
-                break
             self.pygame_handler(context)
             for agent in self.agents:
                 agent.update(self.dt, self.checkpoint_coords)
@@ -67,10 +70,11 @@ class World():
             #break #comment for rendering window
     def setup_world(self):
         if self.generation == 0:
-            genes_load = np.load("genes/gene_1_94564.9795999999.npy")
+            #genes_load = np.load("genes/gene_1_94564.9795999999.npy")
             for i in range(INITAL_POP):
                 rand_chromo = np.random.uniform(-5000, 5000, (2,9,5))
-                if i != 3:
+                #rand_chromo = np.random.uniform(-1, 1, (2,9,5))
+                if True:
                     agent = Agent(np.array([AGENT_INITAIL_X,AGENT_INITAIL_Y]), rand_chromo, self.checkpoint_coords, i) # x=0 + np.random.rand()*500 
                 else:
                     agent = Agent(np.array([AGENT_INITAIL_X,AGENT_INITAIL_Y]), genes_load, self.checkpoint_coords, i, color_bruh=(0,255,255)) # x=0 + np.random.rand()*500 
@@ -101,9 +105,17 @@ class World():
         save_genes(self.agents, self.generation)
         self.generation += 1
         self.global_timer = 0
+        new_agents_genes = proper_selection(self.agents)
+        proper_mutation(new_agents_genes)
+        new_agents = np.zeros(INITAL_POP, dtype=object)
+        for i in range(INITAL_POP):
+            new_agents[i] = Agent(np.array([AGENT_INITAIL_X,AGENT_INITAIL_Y]), new_agents_genes[i], self.checkpoint_coords, i)
+        self.agents = new_agents
+
+        print("restarting simulation")
+
         # Save
         # Crossover / Mutation
-        pass
     def load_simulation(self):
         self.agents = load_genes(self.generation)
 
