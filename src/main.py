@@ -4,6 +4,7 @@ import pygame
 import numpy as np
 from matplotlib import image as mpimg
 from matplotlib import pyplot as plt
+from parameters import *
 
 '''def plotting(track):
     plt.imshow(track)
@@ -11,7 +12,8 @@ from matplotlib import pyplot as plt
     pass
 '''
 def main():
-    world = World()
+    p = Parameters()
+    world = World(p)
     world.setup_world()  # tpye=ignore
     context = {"running": True}
     world.update_world(context)

@@ -42,7 +42,7 @@ class Agent():
         # OUTPUTS
         self.chromosome = chromosome
 
-    def update(self, dt, check_coords):
+    def update(self, dt, check_coords, p):
         # Update lifetime, road time, acceleration, etc.
         if self.active:
             self.lifetime += dt
@@ -51,7 +51,7 @@ class Agent():
         if self.active:
             #   Handle inputs for acceleration and angular acceleration
             self.acceleration += self.handle_input()[0] * 0.1
-            self.acceleration = np.clip(self.acceleration, -MAX_ACC, MAX_ACC)
+            self.acceleration = np.clip(self.acceleration, -p.max_acc, p.max_acc)
            
             self.angular_acceleration += self.handle_input()[1]
             self.angular_acceleration = np.clip(self.angular_acceleration, -MAX_ANG_ACC, MAX_ANG_ACC)
@@ -59,7 +59,7 @@ class Agent():
             # Update velocity and angular velocity
             self.velocity += self.acceleration * dt if self.is_on_road else self.acceleration * dt * DAMPING_FACTOR
             
-            self.velocity = np.clip(self.velocity, -MAX_VEL/5, MAX_VEL) if self.is_on_road else np.clip(self.velocity, -MAX_VEL/5, MAX_VEL) * DAMPING_FACTOR
+            self.velocity = np.clip(self.velocity, -MAX_VEL/5, MAX_VEL) if self.is_on_road else np.clip(self.velocity, -p.max_vel/5, p.max_vel) * DAMPING_FACTOR
         
             self.angular_velocity += self.angular_acceleration * dt
             self.angular_velocity = np.clip(self.angular_velocity, -MAX_ANG_VEL, MAX_ANG_VEL)
@@ -91,10 +91,10 @@ class Agent():
                 self.checkpoint_traversed+=1
                 if i-1 > len(check_coords):
                     self.checkpoint_coordinates = self.checkpoint_coordinates[:i]
-                    print(f"the ith checkpoint: {self.checkpoint_traversed}")
+                    #print(f"the ith checkpoint: {self.checkpoint_traversed}")
                 else:
                     self.checkpoint_coordinates = np.concatenate((self.checkpoint_coordinates[:i], self.checkpoint_coordinates[i+1:]))
-                    print(f"{self.id} traversed checkpoint {self.checkpoint_traversed}")
+                    #print(f"{self.id} traversed checkpoint {self.checkpoint_traversed}")
                 break
         
         pass
@@ -113,8 +113,8 @@ class Agent():
     def handle_input(self):
         self.detection(self.convert_sensor_postion())
         if self.active:
-            acc = 1*np.sum(np.matmul(self.sensors,self.chromosome[0]))
-            ang_acc = 1*np.sum(np.matmul(self.sensors,self.chromosome[1]))
+            acc = 0.5*np.sum(np.matmul(self.sensors,self.chromosome[0]))
+            ang_acc = 0.5*np.sum(np.matmul(self.sensors,self.chromosome[1]))
         else:
             acc = 0
             ang_acc = 0
@@ -149,5 +149,7 @@ class Agent():
 
     def fitness(self):
         
-        return self.active*2000+self.lifetime*3.4 + self.roadtime*500 + 50*self.distance_travelled/self.lifetime + 5000*self.checkpoint_traversed + self.velocity * 200 #self.active*50000+self.lifetime*3.4 + self.roadtime*150 + 25*self.distance_travelled/self.lifetime + self.velocity * 200 + 20000*self.checkpoint_traversed
+        return self.active*20000+self.lifetime*3.4 + self.roadtime*5000 + 500*self.distance_travelled/self.lifetime + 50000*self.checkpoint_traversed + self.velocity * 2 
+
+#self.active*50000+self.lifetime*3.4 + self.roadtime*150 + 25*self.distance_travelled/self.lifetime + self.velocity * 200 + 20000*self.checkpoint_traversed
         #return self.active*2000+self.lifetime*3.4 + self.roadtime*2 + 100*self.distance_travelled/self.lifetime + 20000*self.checkpoint_traversed + self.velocity * 200
