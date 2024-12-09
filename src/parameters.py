@@ -1,5 +1,5 @@
 import sys
-from constants import MAX_ACC, MAX_VEL  # Ensure these constants are defined
+from constants import *  # Ensure these constants are defined
 
 class Flags():
     def __init__(self, flag):
@@ -20,29 +20,46 @@ class Flags():
                 if not potential_value.startswith('--'):
                     self.param_value = potential_value
 
+
+def define_parameters(flag_name, default):                    
+    # Process flag
+    const_flag = Flags(flag_name)
+    const_flag.see_flag()
+    if const_flag.param_value is None:
+        const = default
+    else:
+        try:
+            const = float(const_flag.param_value)
+        except ValueError:
+            print(f"Error: Invalid value for {flag_name}: {const_flag.param_value}")
+            sys.exit(1)
+    return const
+
+
 class Parameters():
     def __init__(self):
-        # Process --ma flag
-        max_acc_flag = Flags('--ma')
-        max_acc_flag.see_flag()
-        if max_acc_flag.param_value is None:
-            self.max_acc = MAX_ACC
-        else:
-            try:
-                self.max_acc = float(max_acc_flag.param_value)
-            except ValueError:
-                print(f"Error: Invalid value for --ma: {max_acc_flag.param_value}")
-                sys.exit(1)
-
-        # Process --mv flag
-        max_vel_flag = Flags('--mv')
-        max_vel_flag.see_flag()
-        if max_vel_flag.param_value is None:
-            self.max_vel = MAX_VEL
-        else:
-            try:
-                self.max_vel = float(max_vel_flag.param_value)
-            except ValueError:
-                print(f"Error: Invalid value for --mv: {max_vel_flag.param_value}")
-                sys.exit(1)
-
+        self.max_acc = define_parameters('--maxacc', MAX_ACC)
+        self.max_vel = define_parameters('--maxvel', MAX_VEL)
+        self.max_ang_vel = define_parameters('--maxangvel', MAX_ANG_VEL)
+        self.max_ang_acc = define_parameters('--maxangacc', MAX_ANG_ACC)
+        self.simulation_time = define_parameters('--time', SIMULATION_TIME)
+        self.init_pop = define_parameters('--initial', INITAL_POP)
+        self.mutation_chance = define_parameters('--mutationchance', MUTATION_CHANCE)
+        self.mutation_type = define_parameters('--mutationtype', 1)
+        self.fitness = define_parameters('--fitness', 1)
+        self.map = define_parameters('--map', 1)
+        self.selection = define_parameters('--selection', 1)
+        self.debug = define_parameters('--debug', 1)
+        self.max_generation = define_parameters('--maxgen', 100)
+        self.seed = define_parameters('--seed', 111)
+        print(f"max accelecration {self.max_acc},"
+              f"max velocity {self.max_vel},"
+              f"max angular velocity {self.max_ang_vel}," 
+              f"max angular accelecration {self.max_ang_acc},"
+              f"simulation_time {self.simulation_time},"
+              f"initial population {self.init_pop},"
+              f"mutation chance {self.mutation_chance},"
+              f"mutation type {self.mutation_type},"
+              f"fitness type {self.fitness},"
+              f"map {self.map},"
+              f"selection {self.selection},")

@@ -4,16 +4,23 @@ from functions import rot_mat
 import pygame as pg
 
 class Agent():
-    def __init__(self, initial_postion, chromosome, checkpoint_coordinates, identity, initial_orientation=np.pi/2, color_bruh =(0,100,255)):           # Should add genes
-        self.surface = pg.Surface((AGENT_SIZE,AGENT_SIZE) )
-        self.surface.fill(color_bruh)
-        #self.surface.fill((0,200,250))
-        self.surface_original = self.surface.copy()
+    def __init__(self, initial_postion, chromosome, checkpoint_coordinates, identity,
+                 params,
+                 initial_orientation=np.pi/2, color_bruh =(0,100,255)):           # Should add genes
+        try:
+            self.surface = pg.Surface((AGENT_SIZE,AGENT_SIZE) )
+            self.surface.fill(color_bruh)
+        
+            #self.surface.fill((0,200,250))
+            self.surface_original = self.surface.copy()
+        except:
+            pass
         self.active = 1
         self.id = identity
         self.sensor_color = (255, 0, 0)
         self.checkpoint_traversed = 0
         self.checkpoint_coordinates = checkpoint_coordinates
+        self.params = params
         # TRAITS
         # MOVEMENT
         self.lifetime = 0
@@ -51,18 +58,22 @@ class Agent():
         if self.active:
             #   Handle inputs for acceleration and angular acceleration
             self.acceleration += self.handle_input()[0] * 0.1
-            self.acceleration = np.clip(self.acceleration, -p.max_acc, p.max_acc)
+            #self.acceleration = np.clip(self.acceleration, -p.max_acc, p.max_acc)
+            self.acceleration = np.tanh(self.acceleration)*p.max_acc
            
             self.angular_acceleration += self.handle_input()[1]
-            self.angular_acceleration = np.clip(self.angular_acceleration, -MAX_ANG_ACC, MAX_ANG_ACC)
+            #self.angular_acceleration = np.clip(self.angular_acceleration, -MAX_ANG_ACC, MAX_ANG_ACC)
+            self.angular_acceleration = np.tanh(self.angular_acceleration)*p.max_ang_acc
             self.collide_checkpoint(self.checkpoint_coordinates)
             # Update velocity and angular velocity
             self.velocity += self.acceleration * dt if self.is_on_road else self.acceleration * dt * DAMPING_FACTOR
             
-            self.velocity = np.clip(self.velocity, -MAX_VEL/5, MAX_VEL) if self.is_on_road else np.clip(self.velocity, -p.max_vel/5, p.max_vel) * DAMPING_FACTOR
+            #self.velocity = np.clip(self.velocity, -MAX_VEL/5, MAX_VEL) if self.is_on_road else np.clip(self.velocity, -p.max_vel/5, p.max_vel) * DAMPING_FACTOR
+            self.velocity = np.tanh(self.velocity)*p.max_vel if self.is_on_road else np.tanh(self.velocity)*p.max_vel*DAMPING_FACTOR
         
             self.angular_velocity += self.angular_acceleration * dt
-            self.angular_velocity = np.clip(self.angular_velocity, -MAX_ANG_VEL, MAX_ANG_VEL)
+            #self.angular_velocity = np.clip(self.angular_velocity, -MAX_ANG_VEL, MAX_ANG_VEL)
+            self.angular_velocity = np.tanh(self.angular_velocity)*p.max_ang_vel
 
             # Update position based on velocity and orientation
             self.position = (
@@ -78,7 +89,10 @@ class Agent():
             #rotated_surface = pg.transform.rotate(self.surface_original, -np.degrees(self.orientation))
 
         # Re-center the surface
-        self.surface_rect = self.surface.get_rect(center=(self.position[0], self.position[1]))
+        try:
+            self.surface_rect = self.surface.get_rect(center=(self.position[0], self.position[1]))
+        except:
+            pass
         # Update sensor positions with the new rotation
         if self.active:
             for i in range(len(self.sensor_positions)):
@@ -103,12 +117,18 @@ class Agent():
         for i in range(len(self.sensor_positions)):
             absolute_sensor_position[i] = (self.position + self.sensor_positions[i])
         return absolute_sensor_position
-
-    def render(self, screen):
-        screen.blit(self.surface, self.surface_rect)
-        for sensor_position in self.convert_sensor_postion():
-            for s in sensor_position:
-                pg.draw.circle(screen, self.sensor_color, (s[0], s[1]), 1)
+    
+    def render(self, screen, debug=True):
+        try:
+            screen.blit(self.surface, self.surface_rect)
+            for sensor_position in self.convert_sensor_postion():
+                for s in sensor_position:
+                    if debug:
+                        pg.draw.circle(screen, self.sensor_color, (s[0], s[1]), 1)
+                    else:
+                        pass
+        except:
+            pass
 
     def handle_input(self):
         self.detection(self.convert_sensor_postion())
@@ -149,7 +169,8 @@ class Agent():
 
     def fitness(self):
         
-        return self.active*20000+self.lifetime*3.4 + self.roadtime*5000 + 500*self.distance_travelled/self.lifetime + 50000*self.checkpoint_traversed + self.velocity * 2 
+        return self.active*(self.roadtime*12 + 7*self.distance_travelled/self.lifetime + 3*int(self.params.fitness)*self.checkpoint_traversed + self.velocity * 2 )
+    
 
 #self.active*50000+self.lifetime*3.4 + self.roadtime*150 + 25*self.distance_travelled/self.lifetime + self.velocity * 200 + 20000*self.checkpoint_traversed
         #return self.active*2000+self.lifetime*3.4 + self.roadtime*2 + 100*self.distance_travelled/self.lifetime + 20000*self.checkpoint_traversed + self.velocity * 200

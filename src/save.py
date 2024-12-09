@@ -5,12 +5,12 @@ from pathlib import Path
 
 
 
-def save_genes(agents, generation):
+def save_genes(agents, generation, p):
     gen_num = 'gen' + str(generation)
     script_dir = Path(__file__).parent
     gene_path = script_dir / '..' / 'generations' / gen_num 
     gene_path = str(gene_path)
-    chromosomes = np.zeros((INITAL_POP, 2, 9, 5))
+    chromosomes = np.zeros((int(p.init_pop), 2, 9, 5))
     for i in range(len(agents)):
         chromosomes[i] = agents[i].chromosome
     np.save(gene_path, chromosomes)
