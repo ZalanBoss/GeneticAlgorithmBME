@@ -11,7 +11,7 @@
     * fitness function (2x)
 * mutation chance (3x)
 
-# Parameter intervall
+# Parameter values
 
 * '--mutationtype' {0,1}
 * '--selection' {0,1}
