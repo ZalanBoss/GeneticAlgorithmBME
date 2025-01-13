@@ -5,7 +5,7 @@ from assets import track_path
 import numpy as np
 from save import *
 from selection import proper_selection
-from mutation import proper_mutation
+from mutation import proper_mutation, mutation
 import sys
 
 import pygame as pg
@@ -141,7 +141,7 @@ class World():
         if self.parameters.mutation_type == 1:
             proper_mutation(new_agents_genes, self.parameters)
         else:
-            pass # TODO: Mutation
+            mutation(new_agents_genes, self.parameters) # TODO: Mutation
             
         new_agents = np.zeros(int(self.parameters.init_pop), dtype=object)
         for i in range(int(self.parameters.init_pop)):

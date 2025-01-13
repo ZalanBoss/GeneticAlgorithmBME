@@ -2,6 +2,7 @@ import numpy as np
 from agent import *
 from constants import MUTATION_CHANCE
 
+"""
 def mutation(agent:Agent, p):
     chromosome = agent.chromosome
     flat_genes = chromosome.flattened()
@@ -14,6 +15,23 @@ def mutation(agent:Agent, p):
             flat_genes[random_index] = mutation_value
     new_chromosome = flat_genes.reshape(chromosome.shape)
     return new_chromosome
+"""
+    
+
+def mutation(genes, p):
+    for i in range(len(genes)):
+        chromosome = genes[i]
+        flat_genes = chromosome.flatten()
+        if np.random.rand() <= p.mutation_chance:
+            # Ensure the high value for randint is valid
+            max_mutations = max(2, int(flat_genes.size * p.mutation_chance))
+            mutation_number = max(1, np.random.randint(1, max_mutations))
+            for _ in range(mutation_number):
+                random_index = np.random.randint(0, flat_genes.size)
+                mutation_value = np.random.randint(-5000, 5000)
+                flat_genes[random_index] = mutation_value
+        genes[i] = flat_genes.reshape(chromosome.shape)
+    return genes
 
 
 
