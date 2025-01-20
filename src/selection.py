@@ -4,18 +4,28 @@ import numpy as np
 from crossover import crossover
 
 def selection(agents, p):
-    fitness_vals = np.zeros(100)
-    counter = 0
-    while counter < int(p.init_pop):
-        fitness_vals[counter] = agents[counter].fitness()
+    fitness_vals = np.zeros(int(p.init_pop))
     
+    # Calculate fitness values safely
+    for counter in range(int(p.init_pop)):
+        fitness_vals[counter] = max(0, agents[counter].fitness())  # Prevent negative fitness
+
+    # Sort agents based on fitness
     sorted_indices = np.argsort(fitness_vals)
     fitness_vals = fitness_vals[sorted_indices]
-    agents = agents[sorted_indices]
+    agents = np.array(agents)[sorted_indices]  # Convert to NumPy array before sorting
+
+    # Prevent division by zero in normalization
     sum_of_fitness = np.sum(fitness_vals)
-    normal_fitness = fitness_vals/sum_of_fitness
-    chosen_indices = np.random.choice(len(normal_fitness), size = 2, replace = False, p = normal_fitness)
-    offspring = crossover((agents[chosen_indices[0]], agents[chosen_indices[1]]))
+    if sum_of_fitness == 0:
+        normal_fitness = np.ones_like(fitness_vals) / len(fitness_vals)  # Assign uniform probability
+    else:
+        normal_fitness = fitness_vals / sum_of_fitness  # Normalize
+
+    # Perform selection
+    chosen_indices = np.random.choice(len(normal_fitness), size=2, replace=False, p=normal_fitness)
+    offspring = crossover(agents[chosen_indices[0]], agents[chosen_indices[1]])
+
     return offspring
 
 def proper_selection(agents, p):
