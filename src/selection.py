@@ -1,6 +1,7 @@
 from agent import *
 from constants import INITAL_POP
 import numpy as np
+from crossover import crossover
 
 def selection(agents, p):
     fitness_vals = np.zeros(100)
@@ -14,7 +15,8 @@ def selection(agents, p):
     sum_of_fitness = np.sum(fitness_vals)
     normal_fitness = fitness_vals/sum_of_fitness
     chosen_indices = np.random.choice(len(normal_fitness), size = 2, replace = False, p = normal_fitness)
-    return (agents[chosen_indices[0]], agents[chosen_indices[1]])
+    offspring = crossover((agents[chosen_indices[0]], agents[chosen_indices[1]]))
+    return offspring
 
 def proper_selection(agents, p):
     fitness_vals = np.zeros(int(p.init_pop))

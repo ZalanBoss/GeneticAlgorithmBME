@@ -4,7 +4,7 @@ from constants import *
 from assets import track_path
 import numpy as np
 from save import *
-from selection import proper_selection
+from selection import proper_selection, selection
 from mutation import proper_mutation, mutation
 import sys
 
@@ -136,8 +136,10 @@ class World():
         if self.parameters.selection == 1:
             new_agents_genes = proper_selection(self.agents, self.parameters)
         else:
-            new_agents_genes = proper_selection(self.agents, self.parameters)
-            pass # TODO: Selection
+            new_agents_genes = np.zeros((int(self.parameters.init_pop), 2, 9, 5))
+            for i in range(int(self.parameters.init_pop)):
+                offspring = selection(self.agents, self.parameters)
+                new_agents_genes[i] = offspring
         if self.parameters.mutation_type == 1:
             proper_mutation(new_agents_genes, self.parameters)
         else:
