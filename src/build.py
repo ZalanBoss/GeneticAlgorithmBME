@@ -56,7 +56,7 @@ class World():
             ])
         elif self.parameters.map == 2:
             self.checkpoint_coords = np.array([
-                [237, 130],
+                [237, 180],
                 [300, 207],
                 [400, 300],
                 [450, 350],
