@@ -20,11 +20,12 @@ from pygame.locals import (
 )
 
 class World():
-    def __init__(self, p):
+    def __init__(self, p, map):
 
         self.fps = FPS
         self.display = False#True
         self.parameters = p
+        self.map = map
         np.random.seed(int(self.parameters.seed))
         if '-d' in sys.argv:
             self.display = True
@@ -34,24 +35,49 @@ class World():
         if self.display:
             try:
                 self.screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-                self.track = pg.image.load(track_path())
+                self.track = pg.image.load(track_path(self.parameters))
                 self.clock = pg.time.Clock()
             except:
                 pass
         self.debug_mode = int(self.parameters.debug) # See checkpoints
         self.dt = 0#self.clock.tick(self.fps)/1000
         self.timestep = 0
-        self.checkpoint_coords = np.array([
-            [170, 430],
-            [335, 360],
-            [435, 250],
-            [565, 175],
-            [740, 290],
-            [565, 430],
-            [435, 350],
-            [335, 230],
-            [170, 165],
-        ])
+        if self.parameters.map == 1:
+            self.checkpoint_coords = np.array([
+                [170, 430],
+                [335, 360],
+                [435, 250],
+                [565, 175],
+                [740, 290],
+                [565, 430],
+                [435, 350],
+                [335, 230],
+                [170, 165],
+            ])
+        elif self.parameters.map == 2:
+            self.checkpoint_coords = np.array([
+                [237, 130],
+                [300, 207],
+                [400, 300],
+                [450, 350],
+                [575, 420],
+                [687, 300],
+                [575, 180],
+                [325, 375],
+                [137, 375],
+            ])
+        else:
+            self.checkpoint_coords = np.array([
+                [78, 200],
+                [300, 100],
+                [300, 400],
+                [475, 400],
+                [590, 250],
+                [690, 120],
+                [728, 300],
+                [612, 537],
+                [87, 537],
+            ])
         #self.global_timer = 0
     def update_world(self, context):
         while context["running"] and self.generation <= self.parameters.max_generation:
@@ -97,7 +123,12 @@ class World():
                 rand_chromo = np.random.uniform(-5000, 5000, (2,9,5))
                 #rand_chromo = np.random.uniform(-1, 1, (2,9,5))
                 if True:
-                    agent = Agent(np.array([AGENT_INITAIL_X,AGENT_INITAIL_Y]), rand_chromo, self.checkpoint_coords, i, params=self.parameters) # x=0 + np.random.rand()*500 
+                    if self.parameters.map == 1:
+                        agent = Agent(np.array([AGENT_INITAIL_X,AGENT_INITAIL_Y]), rand_chromo, self.checkpoint_coords, i, params=self.parameters, map = self.map) # x=0 + np.random.rand()*500 
+                    elif self.parameters.map == 2:
+                        agent = Agent(np.array([112, AGENT_INITAIL_Y]), rand_chromo, self.checkpoint_coords, i, params=self.parameters, map = self.map)
+                    else:
+                        agent = Agent(np.array([77, AGENT_INITAIL_Y]), rand_chromo, self.checkpoint_coords, i, params=self.parameters, map = self.map)
                 else:
                     agent = Agent(np.array([AGENT_INITAIL_X,AGENT_INITAIL_Y]), genes_load, self.checkpoint_coords, i, color_bruh=(0,255,255)) # x=0 + np.random.rand()*500 
 
@@ -147,7 +178,12 @@ class World():
             
         new_agents = np.zeros(int(self.parameters.init_pop), dtype=object)
         for i in range(int(self.parameters.init_pop)):
-            new_agents[i] = Agent(np.array([AGENT_INITAIL_X,AGENT_INITAIL_Y]), new_agents_genes[i], self.checkpoint_coords, i, params=self.parameters)
+            if self.parameters.map == 1:
+                new_agents[i] = Agent(np.array([AGENT_INITAIL_X,AGENT_INITAIL_Y]), new_agents_genes[i], self.checkpoint_coords, i, params=self.parameters, map = self.map) # x=0 + np.random.rand()*500 
+            elif self.parameters.map == 2:
+                new_agents[i] = Agent(np.array([112, AGENT_INITAIL_Y]), new_agents_genes[i], self.checkpoint_coords, i, params=self.parameters, map = self.map)
+            else:
+                new_agents[i] = Agent(np.array([77, AGENT_INITAIL_Y]), new_agents_genes[i], self.checkpoint_coords, i, params=self.parameters, map = self.map)
         self.agents = new_agents
 
         print("restarting simulation")

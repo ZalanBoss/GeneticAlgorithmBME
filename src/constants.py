@@ -1,7 +1,8 @@
 import os
-import assets
+
 #=======
 import numpy as np
+
 
 ### TODO: REMOVE FROM CONSTANTS
 SCREEN_WIDTH = 800
@@ -28,8 +29,5 @@ MUTATION_CHANCE = 0.01
 AGENT_INITAIL_Y = SCREEN_HEIGHT/2
 AGENT_INITAIL_X = 35
 
-MAP =  assets.track
-GREEN = MAP[100, 100]
-BLACK = MAP[400, 300]
-RED = MAP[0,0] # will change it
+
 

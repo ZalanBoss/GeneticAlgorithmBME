@@ -1,6 +1,6 @@
 import numpy as np
 import agent
-from constants import INITAL_POP
+#from constants import INITAL_POP
 from pathlib import Path
 
 

@@ -5,6 +5,7 @@ import numpy as np
 from matplotlib import image as mpimg
 from matplotlib import pyplot as plt
 from parameters import *
+import assets
 
 '''def plotting(track):
     plt.imshow(track)
@@ -13,7 +14,8 @@ from parameters import *
 '''
 def main():
     p = Parameters()
-    world = World(p)
+    map = assets.get_track(p)
+    world = World(p, map)
     world.setup_world()  # tpye=ignore
     context = {"running": True}
     world.update_world(context)

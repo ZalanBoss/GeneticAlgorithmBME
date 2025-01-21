@@ -1,5 +1,5 @@
 from agent import *
-from constants import INITAL_POP
+#from constants import INITAL_POP
 import numpy as np
 from crossover import crossover
 

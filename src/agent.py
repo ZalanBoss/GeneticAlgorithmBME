@@ -5,7 +5,7 @@ import pygame as pg
 
 class Agent():
     def __init__(self, initial_postion, chromosome, checkpoint_coordinates, identity,
-                 params,
+                 params, map,
                  initial_orientation=np.pi/2, color_bruh =(0,100,255)):           # Should add genes
         try:
             self.surface = pg.Surface((AGENT_SIZE,AGENT_SIZE) )
@@ -21,6 +21,16 @@ class Agent():
         self.checkpoint_traversed = 0
         self.checkpoint_coordinates = checkpoint_coordinates
         self.params = params
+        self.map = map
+        if self.params.map == 1:
+            self.green = self.map[0, 0]
+            self.black = self.map[300, 400]
+        elif self.params.map == 2:
+            self.green = self.map[0, 0]
+            self.black = self.map[300, 400]
+        else:
+            self.green = self.map[0, 0]
+            self.black = self.map[400, 400]
         # TRAITS
         # MOVEMENT
         self.lifetime = 0
@@ -144,7 +154,7 @@ class Agent():
         return (acc, ang_acc)
     def collide(self):
         pos = self.position
-        if np.allclose(MAP[int(pos[1]), int(pos[0])], GREEN):
+        if np.allclose(self.map[int(pos[1]), int(pos[0])], self.green):
             self.is_on_road = False
         else:
             self.is_on_road = True 
@@ -162,8 +172,8 @@ class Agent():
         detect_positions = np.round(sensor_positions).astype(int)
         x_positions = np.clip(detect_positions[..., 0], 0, SCREEN_WIDTH - 1)
         y_positions = np.clip(detect_positions[..., 1], 0, SCREEN_HEIGHT - 1)
-        map_values = MAP[y_positions, x_positions]
-        black_mask = np.all(map_values == BLACK, axis=-1)
+        map_values = self.map[y_positions, x_positions]
+        black_mask = np.all(map_values == self.black, axis=-1)
         self.sensors[black_mask] = -1
         self.sensors[~black_mask] = 1 
 
