@@ -7,6 +7,8 @@ from save import *
 from selection import proper_selection, selection
 from mutation import proper_mutation, mutation
 import sys
+from save_data import *
+from functions import get_best_fitness, get_agent_genes
 
 import pygame as pg
 from pygame.locals import (
@@ -26,6 +28,7 @@ class World():
         self.display = False#True
         self.parameters = p
         self.map = map
+        self.all_genes = np.zeros((int(self.parameters.max_generation) + 1, int(self.parameters.init_pop), 2, 9, 5))
         np.random.seed(int(self.parameters.seed))
         if '-d' in sys.argv:
             self.display = True
@@ -116,6 +119,8 @@ class World():
                     pass
             #context["running"] = False
             #break #comment for rendering window
+        save_genes(self.all_genes, self.parameters)
+        return
     def setup_world(self):
         if self.generation == 0:
             #genes_load = np.load("genes/gene_1_94564.9795999999.npy")
@@ -160,7 +165,10 @@ class World():
             elif event.type == QUIT:
                 context["running"] = False
     def restart_simulation(self):
-        save_genes(self.agents, self.generation, self.parameters)
+        #save_genes(self.agents, self.generation, self.parameters)
+        self.all_genes[self.generation] = get_agent_genes(self.agents, self.parameters)
+        best_fitness = get_best_fitness(self.agents, self.parameters)
+        save_best_fitness(self.generation, best_fitness, self.parameters)
         self.generation += 1
         #self.global_timer = 0
         self.timestep = 0
@@ -184,6 +192,8 @@ class World():
                 new_agents[i] = Agent(np.array([112, AGENT_INITAIL_Y]), new_agents_genes[i], self.checkpoint_coords, i, params=self.parameters, map = self.map)
             else:
                 new_agents[i] = Agent(np.array([77, AGENT_INITAIL_Y]), new_agents_genes[i], self.checkpoint_coords, i, params=self.parameters, map = self.map)
+        
+        
         self.agents = new_agents
 
         print("restarting simulation")

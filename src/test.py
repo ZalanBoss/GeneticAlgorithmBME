@@ -8,4 +8,3 @@ img_path = str(img_path)
 
 track = plt.imread(img_path)
 
-plt.imshow(track)
