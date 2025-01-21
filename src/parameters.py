@@ -1,5 +1,6 @@
 import sys
 from constants import *  # Ensure these constants are defined
+import numpy as np
 
 class Flags():
     def __init__(self, flag):

@@ -180,9 +180,8 @@ class Agent():
     def fitness(self):
         
         lifetime = self.lifetime if self.lifetime > 0 else 1  # Prevent division by zero
-        fitness = self.active * (self.roadtime * 12 + 7 * self.distance_travelled / lifetime + 3 * int(self.params.fitness) * self.checkpoint_traversed + self.velocity * 2)
-        print(fitness)
-        return fitness
+        return self.active * (self.roadtime * 12 + 7 * self.distance_travelled / lifetime + 3 * int(self.params.fitness) * self.checkpoint_traversed + self.velocity * 2)
+
 
 #self.active*50000+self.lifetime*3.4 + self.roadtime*150 + 25*self.distance_travelled/self.lifetime + self.velocity * 200 + 20000*self.checkpoint_traversed
         #return self.active*2000+self.lifetime*3.4 + self.roadtime*2 + 100*self.distance_travelled/self.lifetime + 20000*self.checkpoint_traversed + self.velocity * 200
